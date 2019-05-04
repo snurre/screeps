@@ -8,4 +8,4 @@ pluginManagement {
     }
 }
 
-rootProject.name = "screeps-kotlin"
+rootProject.name = "screeps"
