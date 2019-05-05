@@ -10,56 +10,56 @@ import screeps.api.structures.StructureController
 import screeps.game.one.profiled
 
 object Missions {
-    val missionMemory: ActiveMissionMemory
-    val activeMissions: MutableList<Mission> = mutableListOf()
+    val data: MissionsData
+    val missions: MutableList<Mission> = mutableListOf()
 
     init {
-        missionMemory = Memory.activeMissions ?: ActiveMissionMemory(mutableListOf())
+        data = Memory.missions ?: MissionsData()
     }
 
     fun complete() {
         // remove completed mission TODO do this with mission.complete = true
-        val removed = missionMemory.upgradeMissions.removeAll {
+        val removed = data.roomUpgrade.removeAll {
             val controller = Game.getObjectById<StructureController>(it.controllerId)
             controller == null || !controller.my
         }
         if (removed) {
             println("removed a mission")
-            activeMissions.clear()
+            missions.clear()
             save()
         }
     }
 
     fun load() = profiled("missions.load") {
-        fun <T : Mission> List<MissionMemory<T>>.restore() {
-            filter { activeMissions.none { it.missionId == it.missionId } }.forEach { activeMissions.add(it.restoreMission()) }
+        fun <T : Mission> List<MissionData<T>>.restore() {
+            filter { missions.none { it.missionId == it.missionId } }.forEach { missions.add(it.restoreMission()) }
         }
-        missionMemory.upgradeMissions.restore()
-        missionMemory.colonizeMissions.restore()
+        data.roomUpgrade.restore()
+        data.colonize.restore()
     }
 
     fun update() = profiled("missions.update") {
-        for (mission in activeMissions) {
+        for (mission in missions) {
             mission.update()
         }
-        activeMissions.removeAll { it.complete }
-        missionMemory.colonizeMissions.removeAll { it.isComplete() }
+        missions.removeAll { it.complete }
+        data.colonize.removeAll { it.isComplete() }
     }
 
     fun save() = profiled("missions.save") {
-        Memory.activeMissions = missionMemory
+//        Memory.missions = data
     }
 
     fun start() {
-//        if (activeMissions.isEmpty() && missionMemory.upgradeMissions.isEmpty()) {
+//        if (missions.isEmpty() && data.roomUpgrade.isEmpty()) {
 //            val q = RoomUpgradeMission(GameLoop.mainSpawn.room.controller!!.missionId)
-//            missionMemory.upgradeMissions.add(q.memory)
-//            activeMissions.add(q)
+//            data.roomUpgrade.add(q.memory)
+//            missions.add(q)
 //        }
     }
 
     @UseExperimental(ImplicitReflectionSerializer::class)
-    private var Memory.activeMissions: ActiveMissionMemory?
+    private var Memory.missions: MissionsData?
         get() {
             val internal = this.asDynamic()._missionMemory
             return if (internal == null) null else Json.parse(internal)

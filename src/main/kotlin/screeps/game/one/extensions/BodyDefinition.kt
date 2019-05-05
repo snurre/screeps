@@ -16,7 +16,7 @@ fun BodyDefinition.requestCreep(options: CustomSpawnOptions) {
 }
 
 fun BodyDefinition.requestCreepOnce(options: CustomSpawnOptions) {
-    if (GlobalSpawnQueue.spawnQueue.none { it.spawnOptions == options && it.bodyDefinition == this }) {
+    if (GlobalSpawnQueue.queue.none { it.spawnOptions == options && it.bodyDefinition == this }) {
         requestCreep(options)
     }
 }

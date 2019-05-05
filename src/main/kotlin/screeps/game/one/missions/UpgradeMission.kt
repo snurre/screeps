@@ -11,7 +11,7 @@ import screeps.api.structures.StructureController
 //class RCL8UpgradeMission : RunningUpgradeMission()
 
 /**
- * Mission to upgrade a controller using multiple creeps to carry energy
+ * Mission to roomUpgrade a controller using multiple creeps to carry energy
  * Can be cached safely
  *
  * @throws IllegalStateException if it can't be initialized

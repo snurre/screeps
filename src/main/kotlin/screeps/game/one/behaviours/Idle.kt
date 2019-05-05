@@ -5,7 +5,6 @@ import screeps.api.Game
 import screeps.api.Room
 import screeps.api.structures.Structure
 import screeps.api.structures.StructureRoad
-import screeps.api.structures.StructureSpawn
 import screeps.api.values
 import screeps.game.one.BodyDefinition
 import screeps.game.one.Context
@@ -51,7 +50,7 @@ object Idle : Behaviour {
                 creep.memory.state = CreepState.CONSTRUCTING
                 creep.memory.targetId = constructionSite.id
             }
-            //check if we need to upgrade the controller
+            //check if we need to roomUpgrade the controller
             controller != null && controller.level < 8 && Context.creeps.none { it.value.memory.state == CreepState.UPGRADING } -> {
                 creep.memory.state = CreepState.UPGRADING
                 creep.memory.targetId = controller.id
@@ -72,7 +71,7 @@ object Idle : Behaviour {
                 creep.memory.state = CreepState.TRANSFERRING_ENERGY
 
             }
-            //if still idle upgrade controller
+            //if still idle roomUpgrade controller
             controller != null && controller.level < 8 -> {
                 creep.memory.state = CreepState.UPGRADING
                 creep.memory.targetId = controller.id

@@ -3,11 +3,10 @@ package screeps.game.one.missions
 import kotlinx.serialization.Serializable
 
 @Serializable
-class UpgradeMissionMemory(
+class RoomUpgradeMissionData(
     val controllerId: String,
     var state: RoomUpgradeMission.State
-) :
-    MissionMemory<RoomUpgradeMission>() {
+) : MissionData<RoomUpgradeMission>() {
     override val missionId: String = "upgrade_$controllerId"
     override fun restoreMission(): RoomUpgradeMission = RoomUpgradeMission(this)
 }

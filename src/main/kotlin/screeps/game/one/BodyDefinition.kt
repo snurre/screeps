@@ -37,12 +37,14 @@ enum class BodyDefinition(val body: Array<BodyPartConstant>, val maxSize: Int = 
 
     fun getBiggest(availableEnergy: Int): Body {
         var energyCost = availableEnergy
+        val cost = cost
         val body = mutableListOf<BodyPartConstant>()
         var size = 0
 
         while (energyCost - cost >= 0 && (maxSize == 0 || size < maxSize)) {
             energyCost -= cost
-            body.addAll(body)
+            this.body.forEach { body.add(it) }
+//            body += this.body
             size += 1
         }
         body.sortBy { it.value }

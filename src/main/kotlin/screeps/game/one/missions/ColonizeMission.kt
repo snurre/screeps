@@ -6,7 +6,7 @@ import screeps.game.one.Context
 import screeps.game.one.spawn.CustomSpawnOptions
 import screeps.game.one.extensions.*
 
-class ColonizeMission(private val memory: ColonizeMissionMemory) : Mission() {
+class ColonizeMission(private val memory: ColonizeMissionData) : Mission() {
     enum class State {
         SPAWNING_CLAIMER,
         CLAIM,
@@ -155,10 +155,10 @@ class ColonizeMission(private val memory: ColonizeMissionMemory) : Mission() {
         }
 
         fun forRoom(room: RoomPosition): ColonizeMission {
-            val memory = ColonizeMissionMemory(room.x, room.y, room.roomName)
+            val memory = ColonizeMissionData(room.x, room.y, room.roomName)
             val mission = ColonizeMission(memory)
-            Missions.missionMemory.colonizeMissions.add(memory)
-            Missions.activeMissions.add(mission)
+            Missions.data.colonize.add(memory)
+            Missions.missions.add(mission)
             println("spawning persistent ColonizeMission for room ${room.roomName}")
 
             return mission

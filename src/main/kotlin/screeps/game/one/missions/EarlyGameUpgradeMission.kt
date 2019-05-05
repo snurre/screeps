@@ -28,15 +28,8 @@ class EarlyGameUpgradeMission(
             workers.clear()
             workers.addAll(Context.creeps.values.filter { it.memory.missionId == missionId })
 
-            if (workers.size < minWorkerCount
-                && workers.size + GlobalSpawnQueue.spawnQueue.count { it.spawnOptions.missionId == missionId } < minWorkerCount
-            ) {
-                BodyDefinition.WORKER.requestCreep(
-                    CustomSpawnOptions(
-                        CreepState.UPGRADING,
-                        missionId
-                    )
-                )
+            if (workers.size < minWorkerCount && workers.size + GlobalSpawnQueue.queue.count { it.spawnOptions.missionId == missionId } < minWorkerCount) {
+                BodyDefinition.WORKER.requestCreep(CustomSpawnOptions(CreepState.UPGRADING, missionId))
                 println("requested creep for EarlyGameUpgradeMission $missionId in ${controller.room}")
             }
         }

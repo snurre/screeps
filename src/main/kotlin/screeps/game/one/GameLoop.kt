@@ -1,11 +1,8 @@
 package screeps.game.one
 
 import screeps.api.*
-import screeps.api.structures.StructureSpawn
 import screeps.game.one.extensions.*
-import screeps.game.one.missions.ColonizeMission
 import screeps.game.one.missions.Missions
-import screeps.game.one.missions.RoomUpgradeMission
 import screeps.game.one.spawn.CustomSpawnOptions
 import screeps.game.one.spawn.GlobalSpawnQueue
 import screeps.utils.lazyPerTick
@@ -65,14 +62,14 @@ object GameLoop {
 
     private fun spawnHaulers() {
         if (Context.haulerCount < minMiners && mainSpawn.room.storage != null) {
-            if (GlobalSpawnQueue.spawnQueue.count { it.isHauler() } < minMiners - Context.haulerCount) {
+            if (GlobalSpawnQueue.queue.count { it.isHauler() } < minMiners - Context.haulerCount) {
                 GlobalSpawnQueue.push(BodyDefinition.HAULER)
             }
         }
     }
 
     private fun spawnMiners() {
-        if (Context.minerCount < minMiners && GlobalSpawnQueue.spawnQueue.count { it.isMiner() } < minMiners - Context.minerCount) {
+        if (Context.minerCount < minMiners && GlobalSpawnQueue.queue.count { it.isMiner() } < minMiners - Context.minerCount) {
             // TODO we cannot spawn small miners
             GlobalSpawnQueue.push(BodyDefinition.MINER_BIG, CustomSpawnOptions(CreepState.REFILL))
         }
@@ -80,7 +77,7 @@ object GameLoop {
 
     private fun spawnWorkers() {
         if (Context.workerCount < minWorkers) {
-            if (GlobalSpawnQueue.spawnQueue.count { it.isWorker() } < minWorkers - Context.workerCount) {
+            if (GlobalSpawnQueue.queue.count { it.isWorker() } < minWorkers - Context.workerCount) {
                 GlobalSpawnQueue.push(BodyDefinition.WORKER)
             }
         }

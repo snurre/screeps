@@ -5,6 +5,7 @@ import java.util.*
 
 buildscript {
     dependencies {
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.31")
         classpath("org.jetbrains.kotlin:kotlin-serialization:1.3.31")
     }
 }
@@ -13,7 +14,7 @@ plugins {
     id("kotlin2js") version "1.3.31"
     id("kotlin-dce-js") version "1.3.31"
     id("org.tenne.rest") version "0.4.2"
-//    id("kotlinx-serialization")
+    id("kotlinx-serialization") version "1.3.31" apply false
 }
 
 repositories {
@@ -51,7 +52,7 @@ tasks {
     }
 
     "runDceKotlinJs"(KotlinJsDce::class) {
-        keep("main.loop")
+        keep("main.loop", "main.Traveler", "Traveler")
         dceOptions.devMode = false
     }
 
@@ -79,6 +80,7 @@ tasks {
             modules.putAll(File("$buildDir/kotlin-js-min/main")
                 .listFiles { _, name -> name.endsWith(".js") }
                 .associate { it.nameWithoutExtension to it.readText() })
+            modules["Traveler"] = File("$rootDir/src/main/resources/Traveler.js").readText()
         }
 
     }

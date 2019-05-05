@@ -2,20 +2,20 @@ package screeps.game.one.missions
 
 import screeps.api.Room
 
-class RoomUpgradeMission(private val memory: UpgradeMissionMemory) : UpgradeMission(memory.controllerId) {
+class RoomUpgradeMission(private val data: RoomUpgradeMissionData) : UpgradeMission(data.controllerId) {
     enum class State {
         EARLY, LINK, RCL8_MAINTENANCE, RCL8_IDLE
     }
 
-    override val missionId: String = memory.missionId
+    override val missionId: String = data.missionId
     var mission: UpgradeMission?
 
     init {
-        when (memory.state) {
+        when (data.state) {
             State.RCL8_IDLE -> mission = null
             else -> mission = EarlyGameUpgradeMission(
                 this,
-                memory.controllerId,
+                data.controllerId,
                 if (controller.level == 8) 1 else 3
             )
         }
@@ -25,10 +25,10 @@ class RoomUpgradeMission(private val memory: UpgradeMissionMemory) : UpgradeMiss
         const val maxLevel = 8
         fun forRoom(room: Room, state: State = State.EARLY): RoomUpgradeMission {
             val controller = room.controller ?: throw IllegalStateException("Roomcontroller null")
-            val memory = UpgradeMissionMemory(controller.id, state)
+            val memory = RoomUpgradeMissionData(controller.id, state)
             val mission = RoomUpgradeMission(memory)
-            Missions.missionMemory.upgradeMissions.add(memory)
-            Missions.activeMissions.add(mission)
+            Missions.data.roomUpgrade.add(memory)
+            Missions.missions.add(mission)
             println("spawning persistent RoomUpgradeMission for room ${room.name}")
             return mission
         }
@@ -36,15 +36,15 @@ class RoomUpgradeMission(private val memory: UpgradeMissionMemory) : UpgradeMiss
 
     override fun update() {
         if (controller.level == maxLevel) {
-            if (memory.state == State.EARLY) {
-                memory.state = State.RCL8_MAINTENANCE
+            if (data.state == State.EARLY) {
+                data.state = State.RCL8_MAINTENANCE
             }
 
-            if (memory.state == State.RCL8_IDLE && controller.ticksToDowngrade < 100_000) {
-                memory.state = State.RCL8_MAINTENANCE
+            if (data.state == State.RCL8_IDLE && controller.ticksToDowngrade < 100_000) {
+                data.state = State.RCL8_MAINTENANCE
                 mission = EarlyGameUpgradeMission(this, controller.id, 1)
-            } else if (memory.state == State.RCL8_MAINTENANCE && controller.ticksToDowngrade > 140_000) {
-                memory.state = State.RCL8_IDLE
+            } else if (data.state == State.RCL8_MAINTENANCE && controller.ticksToDowngrade > 140_000) {
+                data.state = State.RCL8_IDLE
                 mission?.abort()
                 mission = null
             }
@@ -54,7 +54,7 @@ class RoomUpgradeMission(private val memory: UpgradeMissionMemory) : UpgradeMiss
     }
 
     override fun abort() {
-        if (controller.my) throw IllegalStateException("stopping to upgrade my controller in Room ${controller.room}")
+        if (controller.my) throw IllegalStateException("stopping to roomUpgrade my controller in Room ${controller.room}")
         else {
             mission = null
             complete = true

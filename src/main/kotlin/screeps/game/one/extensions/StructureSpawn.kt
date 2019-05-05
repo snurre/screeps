@@ -15,13 +15,15 @@ fun StructureSpawn.spawn(
     if (room.energyAvailable < bodyDefinition.cost) return ERR_NOT_ENOUGH_ENERGY
     val body = bodyDefinition.getBiggest(room.energyAvailable)
     val name = "${bodyDefinition.name}_T${body.tier}_${Game.time}"
-    println("actual mission = ${options.toSpawnOptions().memory?.missionId}")
+    println("Spawning $name: $body")
     return spawnCreep(body.body.toTypedArray(), name, options.toSpawnOptions()).also {
         if (it == OK) println("Spawning $name with spawnOptions $options")
     }
 }
 
-fun StructureSpawn.tick() = RoomUpgradeMission.forRoom(room)
+fun StructureSpawn.tick(): RoomUpgradeMission {
+    return RoomUpgradeMission.forRoom(room)
+}
 
 fun Record<String, StructureSpawn>.tick() =
-    this.values.filter { it.my && it.room.controller!!.my && Missions.missionMemory.upgradeMissions.none { mission -> mission.controllerId == it.room.controller!!.id } }.forEach { it.tick() }
+    this.values.filter { it.my && it.room.controller!!.my && Missions.data.roomUpgrade.none { mission -> mission.controllerId == it.room.controller!!.id } }.forEach { it.tick() }
